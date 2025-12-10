@@ -2,6 +2,7 @@
   "name": "react",
   "version": "1.0.0",
   "description": "",
+  "homepage": "https://monish-c93.github.io/MyTravelPlanner.be",
   "keywords": [],
   "main": "src/index.tsx",
   "dependencies": {
@@ -20,7 +21,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "browserslist": [
     ">0.2%",
