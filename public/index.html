@@ -3,7 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
     <meta name="theme-color" content="#667eea" />
     <meta
       name="description"
@@ -19,6 +22,34 @@
       content="black-translucent"
     />
     <meta name="apple-mobile-web-app-title" content="Travel Planner" />
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <!-- Prevent bouncing/scrolling -->
+    <style>
+      * {
+        overscroll-behavior: none;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      html,
+      body {
+        overflow: hidden;
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overscroll-behavior-y: none;
+      }
+
+      #root {
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-y: contain;
+      }
+    </style>
 
     <title>Travel Planner</title>
   </head>

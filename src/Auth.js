@@ -83,7 +83,6 @@ function Auth() {
   if (user) {
     return (
       <div style={{ minHeight: "100vh", backgroundColor: "#f0f2f5" }}>
-        {/* Fixed Mobile-Optimized Header */}
         <div
           style={{
             background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
@@ -161,55 +160,62 @@ function Auth() {
   return (
     <div
       style={{
-        minHeight: "100vh",
+        height: "100vh",
+        width: "100vw",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         padding: "20px",
         background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        overflow: "hidden",
+        position: "fixed",
+        top: 0,
+        left: 0,
       }}
     >
       {/* Login Form */}
       <div
         style={{
-          maxWidth: "440px",
+          maxWidth: "400px",
           width: "100%",
           background: "white",
-          padding: "40px",
+          padding: "30px 25px",
           borderRadius: "20px",
           boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
+          maxHeight: "90vh",
+          overflowY: "auto",
         }}
       >
-        <div style={{ textAlign: "center", marginBottom: "30px" }}>
-          <div style={{ fontSize: "50px", marginBottom: "15px" }}>✈️</div>
+        <div style={{ textAlign: "center", marginBottom: "20px" }}>
+          <div style={{ fontSize: "45px", marginBottom: "8px" }}>✈️</div>
           <h1
             style={{
-              fontSize: "32px",
+              fontSize: "26px",
               background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
-              marginBottom: "10px",
+              marginBottom: "6px",
               fontWeight: "bold",
             }}
           >
             Travel Planner
           </h1>
-          <p style={{ color: "#666", fontSize: "16px", margin: 0 }}>
+          <p style={{ color: "#666", fontSize: "14px", margin: 0 }}>
             {isLogin ? "Welcome back!" : "Create your account"}
           </p>
         </div>
 
         <form onSubmit={handleSubmit}>
           {!isLogin && (
-            <div style={{ marginBottom: "20px" }}>
+            <div style={{ marginBottom: "14px" }}>
               <label
                 style={{
                   display: "block",
-                  marginBottom: "8px",
+                  marginBottom: "5px",
                   color: "#333",
                   fontWeight: "600",
-                  fontSize: "14px",
+                  fontSize: "13px",
                 }}
               >
                 Your Name
@@ -222,8 +228,8 @@ function Auth() {
                 required={!isLogin}
                 style={{
                   width: "100%",
-                  padding: "14px",
-                  fontSize: "16px",
+                  padding: "11px 13px",
+                  fontSize: "15px",
                   borderRadius: "10px",
                   border: "2px solid #e0e0e0",
                   outline: "none",
@@ -237,14 +243,14 @@ function Auth() {
             </div>
           )}
 
-          <div style={{ marginBottom: "20px" }}>
+          <div style={{ marginBottom: "14px" }}>
             <label
               style={{
                 display: "block",
-                marginBottom: "8px",
+                marginBottom: "5px",
                 color: "#333",
                 fontWeight: "600",
-                fontSize: "14px",
+                fontSize: "13px",
               }}
             >
               Email Address
@@ -257,8 +263,8 @@ function Auth() {
               required
               style={{
                 width: "100%",
-                padding: "14px",
-                fontSize: "16px",
+                padding: "11px 13px",
+                fontSize: "15px",
                 borderRadius: "10px",
                 border: "2px solid #e0e0e0",
                 outline: "none",
@@ -271,14 +277,14 @@ function Auth() {
             />
           </div>
 
-          <div style={{ marginBottom: "20px" }}>
+          <div style={{ marginBottom: "14px" }}>
             <label
               style={{
                 display: "block",
-                marginBottom: "8px",
+                marginBottom: "5px",
                 color: "#333",
                 fontWeight: "600",
-                fontSize: "14px",
+                fontSize: "13px",
               }}
             >
               Password
@@ -291,8 +297,8 @@ function Auth() {
               required
               style={{
                 width: "100%",
-                padding: "14px",
-                fontSize: "16px",
+                padding: "11px 13px",
+                fontSize: "15px",
                 borderRadius: "10px",
                 border: "2px solid #e0e0e0",
                 outline: "none",
@@ -308,12 +314,12 @@ function Auth() {
           {error && (
             <div
               style={{
-                padding: "12px",
+                padding: "9px",
                 backgroundColor: "#fee",
                 color: "#c33",
                 borderRadius: "8px",
-                marginBottom: "20px",
-                fontSize: "14px",
+                marginBottom: "14px",
+                fontSize: "13px",
                 border: "1px solid #fcc",
               }}
             >
@@ -325,12 +331,12 @@ function Auth() {
             type="submit"
             style={{
               width: "100%",
-              padding: "16px",
+              padding: "13px",
               background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
               color: "white",
               border: "none",
               borderRadius: "10px",
-              fontSize: "18px",
+              fontSize: "16px",
               fontWeight: "bold",
               cursor: "pointer",
               boxShadow: "0 4px 15px rgba(102, 126, 234, 0.4)",
@@ -352,12 +358,12 @@ function Auth() {
         <div
           style={{
             textAlign: "center",
-            marginTop: "25px",
-            paddingTop: "25px",
+            marginTop: "16px",
+            paddingTop: "16px",
             borderTop: "1px solid #e0e0e0",
           }}
         >
-          <span style={{ color: "#666" }}>
+          <span style={{ color: "#666", fontSize: "13px" }}>
             {isLogin ? "Don't have an account? " : "Already have an account? "}
           </span>
           <button
@@ -368,7 +374,7 @@ function Auth() {
               color: "#667eea",
               cursor: "pointer",
               fontWeight: "bold",
-              fontSize: "16px",
+              fontSize: "13px",
             }}
             onMouseOver={(e) => (e.target.style.textDecoration = "underline")}
             onMouseOut={(e) => (e.target.style.textDecoration = "none")}
