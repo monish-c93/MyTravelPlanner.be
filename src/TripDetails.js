@@ -17,7 +17,7 @@ import {
 import Notes from "./Notes";
 
 // Member List Component with Name Fetching
-function MembersList({ members, tripCreator, onRemove }) {
+function MembersList({ members, tripCreator, onRemove, onEdit }) {
   const [memberNames, setMemberNames] = useState({});
 
   useEffect(() => {
@@ -115,22 +115,40 @@ function MembersList({ members, tripCreator, onRemove }) {
           </div>
 
           {member !== tripCreator && (
-            <button
-              onClick={() => onRemove(member)}
-              style={{
-                width: "100%",
-                padding: "8px",
-                background: "transparent",
-                color: "#dc3545",
-                border: "1px solid #dc3545",
-                borderRadius: "6px",
-                cursor: "pointer",
-                fontSize: "13px",
-                fontWeight: "bold",
-              }}
-            >
-              Remove
-            </button>
+            <div style={{ display: "flex", gap: "8px" }}>
+              <button
+                onClick={() => onEdit(member)}
+                style={{
+                  flex: 1,
+                  padding: "8px",
+                  background: "#667eea",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                  fontSize: "13px",
+                  fontWeight: "bold",
+                }}
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => onRemove(member)}
+                style={{
+                  flex: 1,
+                  padding: "8px",
+                  background: "transparent",
+                  color: "#dc3545",
+                  border: "1px solid #dc3545",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                  fontSize: "13px",
+                  fontWeight: "bold",
+                }}
+              >
+                Remove
+              </button>
+            </div>
           )}
         </div>
       ))}
@@ -292,11 +310,158 @@ function TripDetails({ tripId, onBack }) {
     }
 
     try {
+      // Check if member has expenses
+      const expensesQuery = query(
+        collection(db, "expenses"),
+        where("tripId", "==", tripId)
+      );
+      const expensesSnapshot = await getDocs(expensesQuery);
+
+      let hasExpenses = false;
+      expensesSnapshot.docs.forEach((doc) => {
+        const expense = doc.data();
+        if (expense.paidBy === email || expense.splitAmong.includes(email)) {
+          hasExpenses = true;
+        }
+      });
+
+      if (hasExpenses) {
+        const confirmRemove = window.confirm(
+          `${
+            email.split("@")[0]
+          } has expenses in this trip. Removing them will also remove them from all expense splits. Continue?`
+        );
+        if (!confirmRemove) return;
+
+        // Update all expenses - remove member from splitAmong arrays
+        const updatePromises = [];
+        expensesSnapshot.docs.forEach((docSnapshot) => {
+          const expense = docSnapshot.data();
+
+          // If they paid for something, skip that expense (or you can choose to delete it)
+          if (expense.paidBy === email) {
+            // Option: Delete expenses they paid for
+            updatePromises.push(deleteDoc(doc(db, "expenses", docSnapshot.id)));
+          } else if (expense.splitAmong.includes(email)) {
+            // Remove them from splitAmong
+            const updatedSplitAmong = expense.splitAmong.filter(
+              (m) => m !== email
+            );
+            if (updatedSplitAmong.length > 0) {
+              updatePromises.push(
+                updateDoc(doc(db, "expenses", docSnapshot.id), {
+                  splitAmong: updatedSplitAmong,
+                })
+              );
+            } else {
+              // If no one left in split, delete the expense
+              updatePromises.push(
+                deleteDoc(doc(db, "expenses", docSnapshot.id))
+              );
+            }
+          }
+        });
+
+        await Promise.all(updatePromises);
+      }
+
+      // Remove member from trip
       const updatedMembers = trip.members.filter((member) => member !== email);
       await updateDoc(doc(db, "trips", tripId), {
         members: updatedMembers,
       });
-      alert("✅ Removed!");
+
+      alert("✅ Member and their expenses removed!");
+    } catch (error) {
+      alert("Error: " + error.message);
+    }
+  };
+
+  const handleEditMemberEmail = async (oldEmail) => {
+    if (oldEmail === trip.createdBy) {
+      alert("Cannot edit trip creator email!");
+      return;
+    }
+
+    const newEmail = prompt("Enter new email address:", oldEmail);
+
+    if (!newEmail || newEmail.trim() === "") {
+      return;
+    }
+
+    if (newEmail === oldEmail) {
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(newEmail)) {
+      alert("Please enter a valid email address");
+      return;
+    }
+
+    if (trip.members.includes(newEmail.toLowerCase())) {
+      alert("This email is already a member!");
+      return;
+    }
+
+    if (
+      !window.confirm(
+        `Update ${oldEmail} to ${newEmail}?\n\nThis will update all expenses associated with this member.`
+      )
+    ) {
+      return;
+    }
+
+    try {
+      // Update member in trip
+      const updatedMembers = trip.members.map((m) =>
+        m === oldEmail ? newEmail.toLowerCase() : m
+      );
+      await updateDoc(doc(db, "trips", tripId), {
+        members: updatedMembers,
+      });
+
+      // Update all expenses where this member is involved
+      const expensesQuery = query(
+        collection(db, "expenses"),
+        where("tripId", "==", tripId)
+      );
+      const expensesSnapshot = await getDocs(expensesQuery);
+
+      const updatePromises = [];
+      expensesSnapshot.docs.forEach((docSnapshot) => {
+        const expense = docSnapshot.data();
+        let needsUpdate = false;
+        let updatedExpense = { ...expense };
+
+        // Update paidBy if it matches
+        if (expense.paidBy === oldEmail) {
+          updatedExpense.paidBy = newEmail.toLowerCase();
+          needsUpdate = true;
+        }
+
+        // Update splitAmong if it includes the old email
+        if (expense.splitAmong.includes(oldEmail)) {
+          updatedExpense.splitAmong = expense.splitAmong.map((m) =>
+            m === oldEmail ? newEmail.toLowerCase() : m
+          );
+          needsUpdate = true;
+        }
+
+        if (needsUpdate) {
+          updatePromises.push(
+            updateDoc(doc(db, "expenses", docSnapshot.id), {
+              paidBy: updatedExpense.paidBy,
+              splitAmong: updatedExpense.splitAmong,
+            })
+          );
+        }
+      });
+
+      await Promise.all(updatePromises);
+
+      alert("✅ Member email updated successfully!");
     } catch (error) {
       alert("Error: " + error.message);
     }
@@ -518,6 +683,7 @@ function TripDetails({ tripId, onBack }) {
               members={trip.members}
               tripCreator={trip.createdBy}
               onRemove={handleRemoveMember}
+              onEdit={handleEditMemberEmail}
             />
           </div>
         )}

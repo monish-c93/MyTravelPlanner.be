@@ -4,6 +4,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 import TripList from "./TripList";
@@ -64,6 +65,24 @@ function Auth() {
       }
     } catch (err) {
       setError(err.message);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email.trim()) {
+      alert("Please enter your email address first");
+      return;
+    }
+
+    try {
+      await sendPasswordResetEmail(auth, email);
+      alert("✅ Password reset email sent! Check your inbox.");
+    } catch (error) {
+      if (error.code === "auth/user-not-found") {
+        alert("No account found with this email address");
+      } else {
+        alert("Error: " + error.message);
+      }
     }
   };
 
@@ -331,7 +350,7 @@ function Auth() {
             type="submit"
             style={{
               width: "100%",
-              padding: "13px",
+              padding: "14px",
               background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
               color: "white",
               border: "none",
@@ -354,6 +373,26 @@ function Auth() {
             {isLogin ? "Login" : "Sign Up"}
           </button>
         </form>
+
+        {/* Add Forgot Password Link Here */}
+        {isLogin && (
+          <div style={{ textAlign: "center", marginTop: "12px" }}>
+            <button
+              type="button"
+              onClick={handleForgotPassword}
+              style={{
+                background: "none",
+                border: "none",
+                color: "#667eea",
+                cursor: "pointer",
+                fontSize: "13px",
+                textDecoration: "underline",
+              }}
+            >
+              Forgot password?
+            </button>
+          </div>
+        )}
 
         <div
           style={{
