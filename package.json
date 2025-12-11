@@ -2,7 +2,7 @@
   "name": "travel-planner-app",
   "version": "1.0.0",
   "description": "Travel planning app with itinerary, expenses, and checklists",
-  "homepage": "https://monish-c93.github.io/travel-planner-app.be",
+  "homepage": "https://monish-c93.github.io/MyTravelPlanner.be",
   "private": true,
   "dependencies": {
     "react": "^18.2.0",
