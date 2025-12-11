@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/travel-planner-app.be/static/css/main.43f3ffc2.css",
+    "main.js": "/travel-planner-app.be/static/js/main.eb821b13.js",
+    "index.html": "/travel-planner-app.be/index.html",
+    "main.43f3ffc2.css.map": "/travel-planner-app.be/static/css/main.43f3ffc2.css.map",
+    "main.eb821b13.js.map": "/travel-planner-app.be/static/js/main.eb821b13.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.43f3ffc2.css",
+    "static/js/main.eb821b13.js"
+  ]
+}
